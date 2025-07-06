@@ -197,7 +197,7 @@ This project is licensed under the MIT License - see the [LICENSE]( https://gith
 ## 📞 Support
 
 If you have any questions or need help with the project, please:
-1. Check the [Issues](https://github.com/Reaishma/moderncart/issues) page
+1. Check the [Issues]( https://github.com/Reaishma/ModernCart--E--commerce-platform-/issues) page
 2. Create a new issue if your question isn't already answered
 3. Contact me directly at vra.9618@gmail.com
 
