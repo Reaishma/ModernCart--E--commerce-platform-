@@ -45,7 +45,7 @@ ModernCart is a full-stack e-commerce platform built with React and Express, des
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Reaishma/moderncart.git
+   git clone  https://github.com/Reaishma/ModernCart--E--commerce-platform .git
    cd moderncart
    ```
 
