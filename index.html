@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModernCart - E-commerce Platform</title>
+    <meta name="description" content="Modern e-commerce platform with comprehensive product catalog, shopping cart, and user-friendly interface. Portfolio demonstration by Reaishma N.">
+    <meta name="author" content="Reaishma N">
+
+    <meta property="og:title" content="ModernCart - E-commerce Platform">
+    <meta property="og:description" content="Modern e-commerce platform with comprehensive product catalog, shopping cart, and user-friendly interface.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/3b82f6/ffffff?text=ModernCart">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <style>
+        /* Custom Properties (from your original CSS, now directly available) */
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 0.5rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.75rem;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        /* Base styles if needed beyond Tailwind's reset */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Custom Component Styles */
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .card-hover {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Note: btn-primary applied to "Add to Cart" buttons in JS, Auth button uses direct Tailwind */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .category-card {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .category-card:hover {
+            transform: scale(1.05);
+            background: #f8fafc; /* Tailwind's bg-gray-50 */
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .cart-sidebar {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .cart-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out forwards; /* 'forwards' keeps the end state */
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loader {
+            border: 3px solid #f3f4f6; /* Tailwind's bg-gray-100/200 */
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* Notification styles from your custom CSS */
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            color: white;
+            font-weight: 500;
+            /* Removed initial transform, JS will add fade-in */
+        }
+
+        .notification.success {
+            background: var(--success-color);
+        }
+
+        .notification.error {
+            background: var(--error-color);
+        }
+
+        .notification.info {
+            background: var(--primary-color);
+        }
+
+        .notification.warning {
+            background: var(--warning-color);
+        }
+
+        /* Accessibility: sr-only (from your custom CSS) */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* High Contrast Mode (from your custom CSS) */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary-color: #1e40af;
+                --primary-dark: #1e3a8a;
+                --gray-200: #d1d5db;
+                --gray-300: #9ca3af;
+            }
+            
+            /* Apply high contrast adjustments only if necessary, otherwise rely on Tailwind */
+            /* For instance, if you had custom borders or backgrounds, you'd adjust them here */
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+      <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">ModernCart</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            placeholder="Search products..." 
+                            class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                        <button id="searchBtn" class="absolute right-2 top-2 text-gray-500 hover:text-blue-600">
+                            <i data-lucide="search" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    
+                    <button id="cartBtn" class="relative p-2 text-gray-600 hover:text-blue-600">
+                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
+                    </button>
+                    
+                    <button id="authBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-gradient text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-4xl md:text-6xl font-bold mb-4">
+                    Welcome to ModernCart
+                </h2>
+                <p class="text-xl mb-8 text-blue-100">
+                    Shop the latest collection with exclusive deals and fast shipping
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button id="shopNowBtn" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                        Shop Now
+                    </button>
+                    <button id="viewDealsBtn" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition">
+                        View Deals
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 class="text-3xl font-bold text-center mb-12 text-gray-800">Shop by Category</h3>
+            <div id="categoriesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                </div>
+        </div>
+    </section>
+        <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h3 id="sectionTitle" class="text-2xl font-bold text-gray-800">Featured Products</h3>
+                    <p id="sectionSubtitle" class="text-gray-600 mt-1"></p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <select id="sortSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="featured">Sort by: Featured</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="newest">Newest</option>
+                        <option value="rating">Best Rated</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="loadingSpinner" class="flex justify-center py-12">
+                <div class="loader"></div>
+            </div>
+            
+            <div id="productsGrid" class="product-grid fade-in">
+                </div>
+            
+            <div id="loadMoreSection" class="text-center mt-12 hidden">
+                <button id="loadMoreBtn" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    Load More Products
+                </button>
+            </div>
+            
+            <div id="noProductsMessage" class="text-center py-12 hidden">
+                <p class="text-gray-500 text-lg">No products found.</p>
+                <button id="viewAllBtn" class="mt-4 border border-gray-300 px-6 py-2 rounded-lg hover:bg-gray-50 transition">
+                    View All Products
+                </button>
+            </div>
+        </div>
+        </section>
+            <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">ModernCart</h4>
+                    <p class="text-gray-400">Your modern e-commerce solution for all your shopping needs.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Categories</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Electronics</a></li>
+                        <li><a href="#" class="hover:text-white">Clothing</a></li>
+                        <li><a href="#" class="hover:text-white">Home & Garden</a></li>
+                        <li><a href="#" class="hover:text-white">Sports</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-white">Returns</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Portfolio</h4>
+                    <p class="text-gray-400 mb-2">Developed by Reaishma N</p>
+                    <p class="text-gray-400 mb-2">vra.9618@gmail.com</p>
+                    <a href="https://github.com/Reaishma" class="text-blue-400 hover:text-blue-300">
+                        GitHub Profile
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 ModernCart. Portfolio demonstration project.</p>
+            </div>
+        </div>
+            </footer>
+                <div id="cartSidebar" class="cart-sidebar fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-50">
+        <div class="p-6 border-b">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold">Shopping Cart</h3>
+                <button id="closeCartBtn" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="cartItems" class="flex-1 overflow-y-auto p-6">
+            <div id="emptyCart" class="text-center py-12">
+                <i data-lucide="shopping-cart" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                <p class="text-gray-500">Your cart is empty</p>
+            </div>
+        </div>
+        
+        <div id="cartFooter" class="p-6 border-t">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-lg font-semibold">Total:</span>
+                <span id="cartTotal" class="text-lg font-bold text-blue-600">$0.00</span>
+            </div>
+            <button id="checkoutBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                Checkout
+            </button>
+        </div>
+    </div>
+
+    <div id="cartOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+    <div id="authModal" class="fixed inset-0 modal-overlay z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold">Login</h3>
+                    <button id="closeAuthBtn" class="text-gray-500 hover:text-gray-700">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <form id="authForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                        <input type="text" id="username" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                        Login
+                    </button>
+                </form>
+                
+                <p class="text-center text-gray-600 mt-4">
+                    Demo credentials: admin / admin123
+                </p>
+            </div>
+        </div>
+    </div>
+        <script>
+        // ModernCart E-commerce Application
+        // Portfolio demonstration by Reaishma N
+        // GitHub: https://github.com/Reaishma
+
+        // Application State
+        let currentUser = null;
+        let cart = [];
+        let products = [];
+        let categories = [];
+        let currentCategory = null;
+        let currentSearch = '';
+        let currentSort = 'featured';
+        let currentPage = 0;
+        const ITEMS_PER_PAGE = 8;
+
+        // Sample Data
+        const sampleCategories = [
+            { id: 1, name: 'Electronics', slug: 'electronics', icon: 'laptop' },
+            { id: 2, name: 'Clothing', slug: 'clothing', icon: 'shirt' },
+            { id: 3, name: 'Home & Garden', slug: 'home', icon: 'home' },
+            { id: 4, name: 'Sports', slug: 'sports', icon: 'dumbbell' },
+            { id: 5, name: 'Books', slug: 'books', icon: 'book' },
+            { id: 6, name: 'Gaming', slug: 'gaming', icon: 'gamepad-2' }
+        ];
+
+        const sampleProducts = [
+            {
+                id: 1,
+                name: 'Wireless Gaming Controller',
+                price: 89.99,
+                originalPrice: 119.99,
+                image: 'https://images.unsplash.com/photo-1592840062661-c8cfb0c7e1ef?w=400&h=300&fit=crop',
+                category: 6,
+                rating: 4.5,
+                reviews: 128,
+                featured: true,
+                description: 'Premium wireless gaming controller with haptic feedback and adaptive triggers.'
+            },
+            {
+                id: 2,
+                name: 'Smart Fitness Watch',
+                price: 199.99,
+                originalPrice: 249.99,
+                image: 'https://images.unsplash.com/photo-1544117519-31a4b719223d?w=400&h=300&fit=crop',
+                category: 1,
+                rating: 4.3,
+                reviews: 89,
+                featured: true,
+                description: 'Advanced fitness tracking with heart rate monitoring and GPS.'
+            },
+            {
+                id: 3,
+                name: 'Wireless Bluetooth Headphones',
+                price: 149.99,
+                originalPrice: 199.99,
+                image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop',
+                category: 1,
+                rating: 4.7,
+                reviews: 256,
+                featured: true,
+                description: 'Premium over-ear headphones with active noise cancellation.'
+            },
+            {
+                id: 4,
+                name: 'Organic Cotton T-Shirt',
+                price: 29.99,
+                originalPrice: 39.99,
+                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=300&fit=crop',
+                category: 2,
+                rating: 4.2,
+                reviews: 45,
+                featured: false,
+                description: 'Comfortable organic cotton t-shirt in various colors.'
+            },
+            {
+                id: 5,
+                name: 'Smart Home Security Camera',
+                price: 179.99,
+                originalPrice: 229.99,
+                image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop',
+                category: 3,
+                rating: 4.4,
+                reviews: 167,
+                featured: true,
+                description: '1080p HD security camera with night vision and motion detection.'
+            },
+            {
+                id: 6,
+                name: 'Yoga Mat Premium',
+                price: 59.99,
+                originalPrice: 79.99,
+                image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop',
+                category: 4,
+                rating: 4.6,
+                reviews: 92,
+                featured: false,
+                description: 'Non-slip premium yoga mat with carrying strap.'
+            },
+            {
+                id: 7,
+                name: 'JavaScript Complete Guide',
+                price: 39.99,
+                originalPrice: 59.99,
+                image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=300&fit=crop',
+                category: 5,
+                rating: 4.8,
+                reviews: 341,
+                featured: true,
+                description: 'Comprehensive guide to modern JavaScript development.'
+            },
+            {
+                id: 8,
+                name: 'Gaming Mechanical Keyboard',
+                price: 129.99,
+                originalPrice: 169.99,
+                image: 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop',
+                category: 6,
+                rating: 4.5,
+                reviews: 203,
+                featured: false,
+                description: 'RGB mechanical keyboard with blue switches.'
+            },
+            {
+                id: 9,
+                name: 'Denim Jacket Classic',
+                price: 79.99,
+                originalPrice: 99.99,
+                image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=300&fit=crop',
+                category: 2,
+                rating: 4.3,
+                reviews: 78,
+                featured: false,
+                description: 'Classic denim jacket with vintage styling.'
+            },
+            {
+                id: 10,
+                name: 'Indoor Plant Pot Set',
+                price: 45.99,
+                originalPrice: 65.99,
+                image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&h=300&fit=crop',
+                category: 3,
+                rating: 4.1,
+                reviews: 56,
+                featured: false,
+                description: 'Set of 3 ceramic plant pots with drainage holes.'
+            },
+            {
+                id: 11,
+                name: 'Running Shoes',
+                price: 119.99,
+                originalPrice: 149.99,
+                image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop',
+                category: 4,
+                rating: 4.4,
+                reviews: 189,
+                featured: true,
+                description: 'Lightweight running shoes with enhanced cushioning.'
+            },
+            {
+                id: 12,
+                name: 'Python Programming Book',
+                price: 49.99,
+                originalPrice: 69.99,
+                image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=300&fit=crop',
+                category: 5,
+                rating: 4.7,
+                reviews: 298,
+                featured: false,
+                description: 'Learn Python programming from beginner to advanced.'
+            }
+        ];
+                  // DOM Elements
+        const elements = {
+            // Header
+            searchInput: document.getElementById('searchInput'),
+            searchBtn: document.getElementById('searchBtn'),
+            cartBtn: document.getElementById('cartBtn'),
+            cartCount: document.getElementById('cartCount'),
+            authBtn: document.getElementById('authBtn'),
+            
+            // Hero
+            shopNowBtn: document.getElementById('shopNowBtn'),
+            viewDealsBtn: document.getElementById('viewDealsBtn'),
+            
+            // Categories
+            categoriesGrid: document.getElementById('categoriesGrid'),
+            
+            // Products
+            sectionTitle: document.getElementById('sectionTitle'),
+            sectionSubtitle: document.getElementById('sectionSubtitle'),
+            sortSelect: document.getElementById('sortSelect'),
+            loadingSpinner: document.getElementById('loadingSpinner'),
+            productsGrid: document.getElementById('productsGrid'),
+            loadMoreSection: document.getElementById('loadMoreSection'),
+            loadMoreBtn: document.getElementById('loadMoreBtn'),
+            noProductsMessage: document.getElementById('noProductsMessage'),
+            viewAllBtn: document.getElementById('viewAllBtn'),
+            
+            // Cart
+            cartSidebar: document.getElementById('cartSidebar'),
+            cartOverlay: document.getElementById('cartOverlay'),
+            closeCartBtn: document.getElementById('closeCartBtn'),
+            cartItems: document.getElementById('cartItems'),
+            emptyCart: document.getElementById('emptyCart'),
+            cartFooter: document.getElementById('cartFooter'),
+            cartTotal: document.getElementById('cartTotal'),
+            checkoutBtn: document.getElementById('checkoutBtn'),
+            
+            // Auth
+            authModal: document.getElementById('authModal'),
+            closeAuthBtn: document.getElementById('closeAuthBtn'),
+            authForm: document.getElementById('authForm'),
+            username: document.getElementById('username'),
+            password: document.getElementById('password')
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Load data
+            categories = sampleCategories;
+            products = sampleProducts;
+            
+            // Load saved cart
+            loadCart();
+            
+            // Check for saved user
+            loadUser();
+            
+            // Render initial content
+            renderCategories();
+            // Initially render featured products and hide the spinner once done
+            renderProducts(true); // Render featured products by default
+            elements.loadingSpinner.style.display = 'none'; // Hide spinner after rendering
+            updateCartUI();
+            
+            // Set up event listeners
+            setupEventListeners();
+        }
+                  function setupEventListeners() {
+            // Search
+            elements.searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+            elements.searchBtn.addEventListener('click', handleSearch);
+            
+            // Hero buttons
+            elements.shopNowBtn.addEventListener('click', function() {
+                currentCategory = null;
+                currentSearch = '';
+                currentPage = 0;
+                currentSort = 'featured'; // Reset sort when shop now
+                elements.sortSelect.value = 'featured';
+                renderProducts();
+                updateSectionTitle();
+            });
+            
+            elements.viewDealsBtn.addEventListener('click', function() {
+                currentCategory = null;
+                currentSearch = '';
+                currentPage = 0;
+                currentSort = 'featured'; // Ensure sort is set to featured
+                elements.sortSelect.value = 'featured';
+                renderProducts(true); // Show featured products
+                updateSectionTitle('Featured Products');
+            });
+            
+            // Sort
+            elements.sortSelect.addEventListener('change', function() {
+                currentSort = this.value;
+                currentPage = 0;
+                renderProducts();
+            });
+            
+            // Load more
+            elements.loadMoreBtn.addEventListener('click', function() {
+                currentPage++;
+                renderProducts(false, true); // Don't reset, append
+            });
+            
+            // View all
+            elements.viewAllBtn.addEventListener('click', function() {
+                currentCategory = null;
+                currentSearch = '';
+                currentPage = 0;
+                currentSort = 'featured';
+                elements.sortSelect.value = 'featured';
+                renderProducts();
+                updateSectionTitle();
+            });
+            
+            // Cart
+            elements.cartBtn.addEventListener('click', toggleCart);
+            elements.closeCartBtn.addEventListener('click', toggleCart);
+            elements.cartOverlay.addEventListener('click', toggleCart);
+            elements.checkoutBtn.addEventListener('click', handleCheckout);
+
+            // Event delegation for cart item quantity and remove buttons
+            elements.cartItems.addEventListener('click', function(event) {
+                const target = event.target.closest('button');
+                if (!target) return;
+
+                const parentDiv = target.closest('.flex.items-center.space-x-4.mb-4');
+                if (!parentDiv) return;
+
+                const productId = parseInt(parentDiv.dataset.productId);
+
+                if (target.classList.contains('quantity-btn')) {
+                    const icon = target.querySelector('i');
+                    const currentItem = cart.find(item => item.id === productId);
+                    if (!currentItem) return;
+
+                    if (icon.getAttribute('data-lucide') === 'minus') {
+                        updateCartQuantity(productId, currentItem.quantity - 1);
+                    } else if (icon.getAttribute('data-lucide') === 'plus') {
+                        updateCartQuantity(productId, currentItem.quantity + 1);
+                    }
+                } else if (target.classList.contains('text-red-500')) { // Check for the remove button
+                    removeFromCart(productId);
+                }
+            });
+            
+            // Auth
+            elements.authBtn.addEventListener('click', function() {
+                if (currentUser) {
+                    logout();
+                } else {
+                    toggleAuth();
+                }
+            });
+            elements.closeAuthBtn.addEventListener('click', toggleAuth);
+            elements.authForm.addEventListener('submit', handleAuth);
+            }
+                  function renderCategories() {
+            elements.categoriesGrid.innerHTML = categories.map(category => `
+                <div class="category-card bg-white p-6 rounded-lg shadow-sm text-center" data-category="${category.id}">
+                    <div class="w-12 h-12 mx-auto mb-4 text-blue-600">
+                        <i data-lucide="${category.icon}" class="w-full h-full"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800">${category.name}</h4>
+                </div>
+            `).join('');
+            
+            // Add event listeners to category cards
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const categoryId = parseInt(this.dataset.category);
+                    handleCategoryClick(categoryId);
+                });
+            });
+            
+            // Re-initialize icons for new elements
+            lucide.createIcons();
+        }
+
+        function handleCategoryClick(categoryId) {
+            currentCategory = categoryId;
+            currentSearch = '';
+            currentPage = 0;
+            currentSort = 'featured'; // Reset sort when changing category
+            elements.sortSelect.value = 'featured';
+            renderProducts();
+            updateSectionTitle();
+        }
+
+        function handleSearch() {
+            const searchTerm = elements.searchInput.value.trim();
+            currentSearch = searchTerm; // Always update currentSearch, even if empty
+            currentCategory = null; // Clear category filter on search
+            currentPage = 0;
+            currentSort = 'featured'; // Reset sort on search
+            elements.sortSelect.value = 'featured';
+            renderProducts();
+            updateSectionTitle();
+        }
+
+        function renderProducts(featuredOnly = false, append = false) {
+            let filteredProducts = [...products];
+            
+            // Filter by category
+            if (currentCategory) {
+                filteredProducts = filteredProducts.filter(p => p.category === currentCategory);
+            }
+            
+            // Filter by search
+            if (currentSearch) {
+                filteredProducts = filteredProducts.filter(p => 
+                    p.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                    p.description.toLowerCase().includes(currentSearch.toLowerCase())
+                );
+            }
+            
+            // Filter featured products
+            if (featuredOnly) {
+                filteredProducts = filteredProducts.filter(p => p.featured);
+                // If displaying featured, ensure section title reflects it
+                updateSectionTitle('Featured Products'); 
+            } else if (!currentCategory && !currentSearch) {
+                 // If no specific filter, default to featured product title
+                updateSectionTitle('Featured Products');
+            }
+            
+            // Sort products
+            filteredProducts = sortProducts(filteredProducts);
+            
+            // Pagination
+            const totalProducts = filteredProducts.length;
+            const endIndex = (currentPage + 1) * ITEMS_PER_PAGE;
+            const displayProducts = filteredProducts.slice(0, endIndex);
+            
+            // Update UI
+            updateLoadMoreButton(displayProducts.length, totalProducts); // Pass actual displayed count
+            updateNoProductsMessage(displayProducts.length === 0 && totalProducts === 0); // Only show if genuinely no products
+
+            if (!append) {
+                elements.productsGrid.innerHTML = '';
+            }
+            
+            const productsHTML = displayProducts.map(product => createProductCard(product)).join('');
+            
+            if (append) {
+                elements.productsGrid.insertAdjacentHTML('beforeend', productsHTML);
+            } else {
+                elements.productsGrid.innerHTML = productsHTML;
+            }
+            
+            // Add event listeners to product cards (add to cart)
+            setupProductEventListeners();
+            
+            // Re-initialize icons for new elements
+            lucide.createIcons();
+        }
+
+        function sortProducts(products) {
+            switch (currentSort) {
+                case 'price-asc':
+                    return products.sort((a, b) => a.price - b.price);
+                case 'price-desc':
+                    return products.sort((a, b) => b.price - a.price);
+                case 'newest':
+                    // Assuming higher ID means newer, or add a 'dateAdded' property
+                    return products.sort((a, b) => b.id - a.id); 
+                case 'rating':
+                    return products.sort((a, b) => b.rating - a.rating);
+                case 'featured':
+                default:
+                    // Sort featured first, then by ID (or another stable sort)
+                    return products.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || a.id - b.id);
+            }
+        }
+                  function createProductCard(product) {
+            const discountPercent = product.originalPrice ? 
+                Math.round((1 - product.price / product.originalPrice) * 100) : 0;
+            
+            return `
+                <div class="card-hover bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="relative">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+                        ${discountPercent > 0 ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
+                                -${discountPercent}%
+                            </div>
+                        ` : ''}
+                        ${product.featured ? `
+                            <div class="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-sm font-semibold">
+                                Featured
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-3">${product.description}</p>
+                        
+                        <div class="flex items-center mb-3">
+                            <div class="flex items-center">
+                                ${renderStars(product.rating)}
+                                <span class="ml-1 text-sm text-gray-600">(${product.reviews})</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xl font-bold text-gray-800">$${product.price.toFixed(2)}</span>
+                                ${product.originalPrice ? `
+                                    <span class="text-sm text-gray-500 line-through">$${product.originalPrice.toFixed(2)}</span>
+                                ` : ''}
+                            </div>
+                            <button class="add-to-cart-btn btn-primary text-white px-4 py-2 rounded-lg font-semibold" 
+                                    data-product-id="${product.id}">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            
+            let starsHTML = '';
+            
+            // Full stars
+            for (let i = 0; i < fullStars; i++) {
+                starsHTML += '<i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>';
+            }
+            
+            // Half star
+            if (hasHalfStar) {
+                starsHTML += '<i data-lucide="star-half" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>';
+            }
+            
+            // Empty stars
+            for (let i = 0; i < emptyStars; i++) {
+                starsHTML += '<i data-lucide="star" class="w-4 h-4 text-gray-300"></i>';
+            }
+            
+            return starsHTML;
+        }
+
+        function setupProductEventListeners() {
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = parseInt(this.dataset.productId);
+                    addToCart(productId);
+                });
+            });
+        }
+
+        function updateSectionTitle(title = '') {
+            if (title) {
+                elements.sectionTitle.textContent = title;
+                elements.sectionSubtitle.textContent = '';
+            } else if (currentSearch) {
+                elements.sectionTitle.textContent = `Search Results for "${currentSearch}"`;
+                elements.sectionSubtitle.textContent = '';
+            } else if (currentCategory) {
+                const category = categories.find(c => c.id === currentCategory);
+                elements.sectionTitle.textContent = `${category.name} Products`;
+                elements.sectionSubtitle.innerHTML = `
+                    Showing products in ${category.name} category
+                    <button class="ml-2 text-blue-600 hover:text-blue-800 font-medium" onclick="clearCategoryFilter()">
+                        Clear filter
+                    </button>
+                `;
+            } else {
+                elements.sectionTitle.textContent = 'Featured Products'; // Default fallback
+                elements.sectionSubtitle.textContent = '';
+            }
+        }
+
+        function clearCategoryFilter() {
+            currentCategory = null;
+            currentSearch = ''; // Clear search too
+            currentPage = 0;
+            currentSort = 'featured'; // Reset sort
+            elements.sortSelect.value = 'featured';
+            renderProducts();
+            updateSectionTitle();
+        }
+
+        function updateLoadMoreButton(displayedCount, totalCount) {
+            const hasMore = displayedCount < totalCount;
+            if (hasMore) {
+                elements.loadMoreSection.classList.remove('hidden');
+                elements.loadMoreBtn.textContent = `Load More Products (${displayedCount} of ${totalCount})`;
+            } else {
+                elements.loadMoreSection.classList.add('hidden');
+            }
+        }
+
+        function updateNoProductsMessage(show) {
+            if (show) {
+                elements.noProductsMessage.classList.remove('hidden');
+                elements.loadMoreSection.classList.add('hidden'); // Hide load more if no products
+            } else {
+                elements.noProductsMessage.classList.add('hidden');
+            }
+          }
+                  // Cart Functions
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                });
+            }
+            
+            saveCart();
+            updateCartUI();
+            showNotification(`${product.name} added to cart!`);
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+            updateCartUI();
+            showNotification('Item removed from cart.', 'info');
+        }
+
+        function updateCartQuantity(productId, quantity) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                if (quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    item.quantity = quantity;
+                    saveCart();
+                    updateCartUI();
+                }
+            }
+        }
+
+        function updateCartUI() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            elements.cartCount.textContent = totalItems;
+            elements.cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
+            
+            if (cart.length === 0) {
+                elements.emptyCart.style.display = 'block';
+                elements.cartItems.innerHTML = ''; // Clear items when empty
+                elements.cartFooter.classList.add('hidden'); // Use class for consistency
+            } else {
+                elements.emptyCart.style.display = 'none';
+                elements.cartFooter.classList.remove('hidden');
+                renderCartItems();
+            }
+        }
+
+        function renderCartItems() {
+            elements.cartItems.innerHTML = cart.map(item => `
+                <div class="flex items-center space-x-4 mb-4 p-3 bg-gray-50 rounded-lg" data-product-id="${item.id}">
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-gray-800">${item.name}</h4>
+                        <p class="text-gray-600">$${item.price.toFixed(2)}</p>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <button class="quantity-btn bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded flex items-center justify-center">
+                                <i data-lucide="minus" class="w-4 h-4"></i>
+                            </button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button class="quantity-btn bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded flex items-center justify-center">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            // Re-initialize icons for new elements
+            lucide.createIcons();
+        }
+
+        function toggleCart() {
+            elements.cartSidebar.classList.toggle('open');
+            elements.cartOverlay.classList.toggle('hidden');
+        }
+
+        function handleCheckout() {
+            if (cart.length === 0) {
+                showNotification('Your cart is empty!', 'error');
+                return;
+            }
+            
+            if (!currentUser) {
+                showNotification('Please login to checkout', 'error');
+                toggleAuth();
+                return;
+            }
+            
+            // Simulate checkout process
+            showNotification('Order placed successfully!', 'success');
+            cart = [];
+            saveCart();
+            updateCartUI();
+            toggleCart(); // Close cart after checkout
+        }
+
+        function saveCart() {
+            localStorage.setItem('modernCart', JSON.stringify(cart));
+        }
+
+        function loadCart() {
+            const savedCart = localStorage.getItem('modernCart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+        }
+                  // Auth Functions
+        function toggleAuth() {
+            elements.authModal.classList.toggle('hidden');
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            
+            const username = elements.username.value;
+            const password = elements.password.value;
+            
+            // Demo authentication
+            if (username === 'admin' && password === 'admin123') {
+                currentUser = { username: 'admin', name: 'Admin User' };
+                saveUser();
+                updateAuthUI();
+                toggleAuth();
+                showNotification('Login successful!', 'success');
+                // Clear form fields
+                elements.username.value = '';
+                elements.password.value = '';
+            } else {
+                showNotification('Invalid credentials. Try admin/admin123', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('modernUser');
+            updateAuthUI();
+            showNotification('Logged out successfully!', 'success');
+        }
+
+        function updateAuthUI() {
+            if (currentUser) {
+                elements.authBtn.textContent = 'Logout';
+                // The event listener is set up once in setupEventListeners
+                // elements.authBtn.onclick = logout; // Removed to use single event listener
+            } else {
+                elements.authBtn.textContent = 'Login';
+                // elements.authBtn.onclick = toggleAuth; // Removed to use single event listener
+            }
+        }
+
+        function saveUser() {
+            localStorage.setItem('modernUser', JSON.stringify(currentUser));
+        }
+
+        function loadUser() {
+            const savedUser = localStorage.getItem('modernUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateAuthUI(); // Update UI immediately after loading user
+            }
+        }
+
+        // Utility Functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification fade-in ${
+                type === 'success' ? 'success' : 
+                type === 'error' ? 'error' : 
+                type === 'warning' ? 'warning' : 'info'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize Lucide icons on page load
+        lucide.createIcons();
+    </script>
+</body>
+</html>
