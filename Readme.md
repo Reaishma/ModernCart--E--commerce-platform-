@@ -141,7 +141,7 @@ ModernCart is a full-stack e-commerce platform built with React and Express, des
 
 ## 🎯 Live Demo
 
-[View Live Demo](https://your-Reaishma.github.io/moderncart)
+[View Live Demo](https://reaishma.github.io/ModernCart--E--commerce-platform-/ )
 
 ### User Experience
 - **Demo Authentication** (username: `admin`, password: `admin123`)
