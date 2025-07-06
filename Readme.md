@@ -178,7 +178,7 @@ ModernCart is a full-stack e-commerce platform built with React and Express, des
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE]( https://github.com/Reaishma/ModernCart--E--commerce-platform-/blob/main/LICENSE ) file for details.
 
 ## 👨‍💻 Developer
 **Reaishma N**
