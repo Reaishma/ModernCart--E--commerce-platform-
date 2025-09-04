@@ -2,6 +2,8 @@
 
 ModernCart is a full-stack e-commerce platform built with React and Express, designed to provide a modern shopping experience with comprehensive product management, user authentication, and cart functionality. The application follows a monorepo structure with shared schemas and types between frontend and backend.
 
+![overview](https://github.com/Reaishma/ModernCart--E--commerce-platform-/blob/main/Screenshot_20250904-142854_1.jpg)
+
 # 🎯 Live Demo
 
 View Live Demo https://reaishma.github.io/ModernCart--E--commerce-platform-/
