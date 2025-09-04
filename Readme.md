@@ -126,6 +126,9 @@ View Live Demo https://reaishma.github.io/ModernCart--E--commerce-platform-/
 - Featured products system
 
 ### Shopping Cart
+
+![shopping Cart](https://github.com/Reaishma/ModernCart--E--commerce-platform-/blob/main/Screenshot_20250904-143746_1.jpg)
+
 - Persistent cart storage for authenticated users
 - Real-time cart updates with optimistic UI
 - Quantity management and item removal
