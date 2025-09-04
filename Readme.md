@@ -99,6 +99,7 @@ View Live Demo https://reaishma.github.io/ModernCart--E--commerce-platform-/
 3. **Cart Operations**: User adds to cart → Client sends request → Server updates database → Cart state refreshed
 4. **Admin Operations**: Admin accesses panel → Server validates admin role → CRUD operations on products/categories → Database updated
 
+![featured products](https://github.com/Reaishma/ModernCart--E--commerce-platform-/blob/main/Screenshot_20250904-144125.jpg)
 
 ## Key Components
 
