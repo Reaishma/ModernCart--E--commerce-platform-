@@ -116,6 +116,9 @@ View Live Demo https://reaishma.github.io/ModernCart--E--commerce-platform-/
 - Protected routes on both frontend and backend
 
 ### Product Management
+
+![filtering](https://github.com/Reaishma/ModernCart--E--commerce-platform-/blob/main/Screenshot_20250904-143100_1.jpg)
+
 - Admin panel for product and category management
 - Image upload and management
 - Stock tracking and inventory management
