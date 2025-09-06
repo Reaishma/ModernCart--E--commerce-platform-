@@ -86,7 +86,7 @@ View Live Demo https://reaishma.github.io/ModernCart--E--commerce-platform-/
 │   ├── routes.ts          # API route definitions
 │   ├── storage.ts         # Database operations
 │   ├── db.ts              # Database connection
-│   └── replitAuth.ts      # Authentication setup
+│    
 ├── shared/                # Shared types and schemas
 │   └── schema.ts          # Database schema definitions
 └── package.json           # Project dependencies
